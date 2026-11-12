@@ -18,7 +18,7 @@
     t_all: "Las " + total + " preguntas, " + (v2008 ? "examen de 2008" : "examen de 2025"),
     lede_std: v2008 ? "Para solicitudes presentadas antes del 20 de octubre de 2025. El oficial le hace hasta 10 de las 100 preguntas en inglés; usted necesita 6 correctas. Diga su respuesta en voz alta, muestre las respuestas y califíquese con honestidad. El español es solo una ayuda para entender."
                     : "El oficial le hace hasta 20 preguntas en inglés. Diga su respuesta en voz alta, muestre las respuestas y califíquese con honestidad. El español es solo una ayuda para entender.",
-    lede_6520: "El oficial le hace 10 de las 20 preguntas marcadas 65/20 y usted necesita al menos 6 correctas. Puede tomar este examen en el idioma de su elección con un intérprete.",
+    lede_6520: "El oficial le hace 10 de las 20 preguntas marcadas 65/20 y usted necesita al menos 6 correctas. Puede tomar este examen en el idioma de su elección.",
     lede_all: "Las " + total + " preguntas en el orden de USCIS. Diga su respuesta, muestre las respuestas y califíquese.",
     q: "Pregunta", of: "de", right: "correctas", wrong: "incorrectas",
     show: "Mostrar las respuestas", ok: "La respondí bien", bad: "La respondí mal", hear: "Escuchar la pregunta",
@@ -42,7 +42,7 @@
     t_all: "All " + total + " questions, " + (v2008 ? "2008 civics test" : "2025 civics test"),
     lede_std: v2008 ? "For applications filed before 20 October 2025. The officer asks up to 10 of the 100 questions; you need 6 correct. Say your answer out loud, then show the USCIS answers and mark yourself honestly."
                     : "2025 civics test: the officer asks up to 20 questions. Say your answer out loud, then show the USCIS answers and mark yourself honestly.",
-    lede_6520: "The officer asks 10 of the 20 questions marked 65/20, and you need at least 6 correct. You may take this test in the language of your choice with an interpreter.",
+    lede_6520: "The officer asks 10 of the 20 questions marked 65/20, and you need at least 6 correct. You may take this test in the language of your choice.",
     lede_all: "All " + total + " questions in USCIS order. Say your answer, show the answers, mark yourself.",
     q: "Question", of: "of", right: "right", wrong: "wrong",
     show: "Show the answers", ok: "I got it right", bad: "I got it wrong", hear: "Hear the question",
