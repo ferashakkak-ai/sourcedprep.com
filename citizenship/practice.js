@@ -141,7 +141,7 @@
       var an = $("anote"); an.textContent = q.note || ""; if (s) addSpan(an, s.note_es);
       if (varies(q)) {
         var cur = current(q), p = document.createElement("span"); p.style.display = "block";
-        if (cur) p.textContent = T.listed(NAMES.read) + cur.join("; ") + ".";
+        if (cur) { var j = cur.join("; "); p.textContent = T.listed(es && NAMES.read_es ? NAMES.read_es : NAMES.read) + j + (/\.$/.test(j) ? "" : "."); }
         else if (lookup(q)) p.textContent = T.own + lookup(q) + ".";
         if (p.textContent) an.appendChild(p);
       }
