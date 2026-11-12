@@ -32,7 +32,9 @@
     only: "Esto es solo práctica; el examen real es oral y lo decide el oficial.",
     none: "Ninguna marcada como incorrecta.", again: "Practicar otra vez", back: "Volver a la lista",
     fail: "No se pudieron cargar las preguntas. La lista completa está en la página de preguntas.",
-    review: "Preguntas para repasar"
+    review: "Preguntas para repasar",
+    listed: function (d) { return "Según la página de USCIS, leída el " + d + ": "; },
+    own: "Esta respuesta depende de dónde vive. Diga la respuesta de su estado y compruébela en: "
   } : {
     test: v2008 ? "2008 civics test" : "2025 civics test",
     t_std: "Practice interview: " + (v2008 ? "2008 civics test" : "2025 civics test"),
@@ -54,7 +56,9 @@
     only: "This is practice only; the real test is spoken, and the officer decides.",
     none: "None marked wrong.", again: "Practice again", back: "Back to the question list",
     fail: "The questions could not be loaded. The full list is on the question list page.",
-    review: "Questions to review"
+    review: "Questions to review",
+    listed: function (d) { return "As listed by USCIS, read on " + d + ": "; },
+    own: "This answer depends on where you live. Say your own answer, then check it at: "
   };
   var rules = {
     standard: v2008 ? { ask: 10, pass: 6, failAt: 5, title: T.t_std } : { ask: 20, pass: 12, failAt: 9, title: T.t_std },
@@ -74,15 +78,25 @@
   if ("serviceWorker" in navigator) { navigator.serviceWorker.register("/sw.js").catch(function () {}); }
   var files = [getJSON(v2008 ? "/citizenship/questions-2008.json" : "/citizenship/questions.json")];
   if (es) files.push(getJSON(v2008 ? "/citizenship/es2008.json" : "/citizenship/es128.json"));
-  Promise.all(files).then(function (res) {
+  var namesP = getJSON("/citizenship/current-names.json").catch(function () { return null; });
+  Promise.all(files.concat([namesP])).then(function (res) {
+    var NAMES = res[res.length - 1];
     var ES = {};
     if (es) res[1].questions.forEach(function (s) { ES[s.n] = s; });
     var pool = res[0].questions;
     if (mode === "6520") pool = pool.filter(function (q) { return q.star; });
-    // Questions whose answer depends on where you live or on who holds office cannot be self-marked against a fixed list:
-    // leave them out of random interviews (they stay in "all" mode, with the USCIS note).
+    // Questions whose answer depends on where you live or on who holds office stay in every mode (the officer asks them too):
+    // federal names are shown as USCIS lists them, with the date read; state answers get a "say your own, then check" prompt.
     var varies = function (q) { var a = (q.answers[0] || ""); return /^Answers will vary/.test(a) || /^Visit uscis\.gov/.test(a); };
-    if (mode !== "all") pool = pool.filter(function (q) { return !varies(q); });
+    var current = function (q) { return NAMES && NAMES[v2008 ? "2008" : "2025"] && NAMES[v2008 ? "2008" : "2025"][String(q.n)]; };
+    var lookup = function (q) {
+      var t = (q.q + " " + (q.answers.join(" "))).toLowerCase();
+      if (!NAMES) return "";
+      if (/senator/.test(t)) return NAMES.state_lookup.senators;
+      if (/representative/.test(t) && !/house of representatives now/.test(t)) return NAMES.state_lookup.representative;
+      if (/governor/.test(t)) return NAMES.state_lookup.governor;
+      return "";
+    };
     var order = mode === "all" ? pool.slice() : shuffle(pool.slice()).slice(0, rules.ask);
     var i = 0, right = 0, wrong = 0, missed = [], started = false;
     document.documentElement.lang = es ? "es" : "en";
@@ -125,6 +139,12 @@
         s.answers_es.forEach(function (b) { var li = document.createElement("li"); addSpan(li, b); ul.appendChild(li); });
       }
       var an = $("anote"); an.textContent = q.note || ""; if (s) addSpan(an, s.note_es);
+      if (varies(q)) {
+        var cur = current(q), p = document.createElement("span"); p.style.display = "block";
+        if (cur) p.textContent = T.listed(NAMES.read) + cur.join("; ") + ".";
+        else if (lookup(q)) p.textContent = T.own + lookup(q) + ".";
+        if (p.textContent) an.appendChild(p);
+      }
       $("answers").classList.remove("show");
       $("controls").classList.remove("hidden");
       $("mark").classList.add("hidden");
@@ -168,7 +188,7 @@
       $("answers").classList.add("show");
       $("controls").classList.add("hidden");
       $("mark").classList.remove("hidden");
-      $("right").focus();
+      $("answers").setAttribute("tabindex", "-1"); $("answers").focus();   // screen readers hear the answers first
     });
     $("right").addEventListener("click", function () { next(true); });
     $("wrong").addEventListener("click", function () { next(false); });
