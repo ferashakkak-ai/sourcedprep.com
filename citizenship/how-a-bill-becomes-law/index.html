@@ -10,7 +10,7 @@
 
 <link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#1f5d4c"><link rel="apple-touch-icon" href="/icons/icon-192.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231f5d4c'/%3E%3Cpath d='M12 6H7v20h5M20 6h5v20h-5' fill='none' stroke='white' stroke-width='3' stroke-linecap='square'/%3E%3Cpath d='M11 16.5l3.6 3.6 6.4-8.2' fill='none' stroke='%23e6a23c' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-
+<meta property="og:type" content="website"><meta property="og:site_name" content="Sourced Prep"><meta property="og:title" content="How a Bill Becomes a Law: Civics Test | Sourced Prep"><meta property="og:description" content="Congress writes bills, the House and the Senate vote, and the President signs or vetoes. The steps from the USCIS guide and the questions they answer."><meta property="og:url" content="https://sourcedprep.com/citizenship/how-a-bill-becomes-law/"><meta property="og:image" content="https://sourcedprep.com/img/og-citizenship.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:locale" content="en_US"><meta name="twitter:card" content="summary_large_image">
 <style>
 :root{--bg:#f7f5f0;--surface:#ffffff;--ink:#1c1d1f;--muted:#55585e;--line:#dcd8cf;--accent:#1f5d4c;--accent-ink:#ffffff;--ok:#1f5d4c;--ok-bg:#e3efe9;--focus:#b8541b;color-scheme:light dark}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121416;--surface:#1b1e21;--ink:#ecebe7;--muted:#a7aaaf;--line:#2f3337;--accent:#7cc3ac;--accent-ink:#0d1a16;--ok:#9ad6c1;--ok-bg:#1d2e28;--focus:#f0a06b}}
@@ -131,9 +131,9 @@ footer.site{border-top:1px solid var(--line);margin-top:3rem;padding:48px 0 32px
 @media (min-width:64rem){.fgrid{grid-template-columns:1.6fr 1fr 1fr 1fr 1fr}}
 .fgrid .fb{grid-column:1/-1}
 @media (min-width:64rem){.fgrid .fb{grid-column:auto}}
-footer.site h3{font:700 .8rem/1.3 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 .6rem}
+footer.site h2{font:700 .84rem/1.3 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 .6rem}
 footer.site ul{list-style:none;margin:0;padding:0}
-footer.site li a{display:inline-flex;align-items:center;min-height:40px;color:var(--ink)}
+footer.site li a{display:inline-flex;align-items:center;min-height:44px;color:var(--ink)}
 footer.site .small{margin:.5rem 0 0}
 .indep{margin-top:32px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:.88rem}
 .indep p{margin:0 0 .5rem}
@@ -147,16 +147,153 @@ p.next{margin:2rem 0 1rem}
 .tablewrap th{font-family:var(--sans);background:var(--mint)}
 @media (max-width:26.25rem){.tablewrap table,.tablewrap tbody,.tablewrap tr,.tablewrap td,.tablewrap th{display:block;width:100%;min-width:0}
 .tablewrap thead{display:none}.tablewrap tr{border:1px solid var(--line);border-radius:8px;margin:0 0 .6rem;overflow:hidden}
-.tablewrap td,.tablewrap th{border:0;border-top:1px solid var(--line)}.tablewrap tr>:first-child{border-top:0;font-weight:600;background:var(--mint)}}
+.tablewrap td,.tablewrap th{border:0;border-top:1px solid var(--line)}.tablewrap tr>:first-child{border-top:0;font-weight:600;background:var(--mint)}
+.tablewrap tr.hdr{display:none}.tablewrap [data-label]::before{content:attr(data-label);display:block;font:700 .84rem/1.3 var(--sans);color:var(--muted);margin-bottom:2px}}
 
+.eyebrow{font:700 .8rem/1.3 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--gold-ink);margin:0 0 .6rem}
+.sec{padding:48px 0}
+@media (min-width:64rem){.sec{padding:72px 0}}
+.sec-h{margin:0 0 24px}
+.sec-h h2{margin:0;font-size:clamp(1.5rem,1.15rem + 1.4vw,2.1rem);line-height:1.15}
+.sec-h h2::before{content:"";display:block;width:36px;height:3px;border-radius:2px;background:var(--gold);margin:0 0 12px}
+.hero{padding:24px 0 36px;background:linear-gradient(180deg,var(--surface),var(--paper))}
+@media (min-width:64rem){.hero{padding:56px 0 64px}}
+.hero .hw{display:grid;gap:32px}
+@media (min-width:64rem){.hero .hw{grid-template-columns:1.15fr .85fr;gap:56px;align-items:center}}
+.hero h1{margin:0 0 12px;font-size:clamp(1.75rem,1.1rem + 2.9vw,3.1rem)}
+.hero .lede{margin:0 0 20px;font-size:1.05rem}
+.doors{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+@media (min-width:40rem){.doors{grid-template-columns:1fr 1fr}}
+.door{display:flex;flex-direction:column;justify-content:center;min-height:64px;height:100%;padding:10px 44px 10px 16px;border-radius:10px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);text-decoration:none;color:var(--ink);position:relative}
+.door::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:5px;border-radius:0 4px 4px 0;background:var(--acc)}
+.door::after{content:"\2192";position:absolute;right:14px;top:50%;transform:translateY(-50%);font:700 1.1rem var(--sans);color:var(--acc)}
+.door.cz{--acc:var(--cz)}.door.tx{--acc:var(--tx)}.door.ca{--acc:var(--ca)}
+.door b{font:700 1.02rem/1.25 var(--sans)}
+.door span{font-size:.86rem;color:var(--muted);line-height:1.35}
+.hero .bo{display:inline-flex;align-items:center;min-height:44px;margin-top:8px;font-weight:600;font-size:.95rem}
+.art{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:10px;background:var(--mint);border-radius:12px;border-top:4px solid var(--gold)}
+.art img{width:100%;height:auto;border-radius:6px;display:block}.art a{display:block}
+.art p{display:none}
+@media (min-width:64rem){.art{grid-template-columns:1fr 1fr;gap:14px;padding:20px}.art .i1{grid-column:1/-1}}
+@media (min-width:99rem){.oldart{display:none}
+ .oldart p{display:none}}
+.proof{background:var(--mint)}
+.two2{display:grid;gap:16px}
+@media (min-width:64rem){.two2{grid-template-columns:1fr 1fr;gap:24px;align-items:start}}
+.sq{background:var(--surface);color:var(--ink);border:1px solid var(--line);border-top:4px solid var(--acc);border-radius:12px;padding:20px;box-shadow:var(--shadow)}
+.sq.cz{--acc:var(--cz)}.sq.tx{--acc:var(--tx)}.sq.ca{--acc:var(--ca)}
+.sq .tag{margin:0 0 10px}
+.sq .qt{font:700 1.08rem/1.4 var(--serif);margin:10px 0 12px}
+.sq ol{list-style:none;margin:0 0 14px;padding:0;display:grid;gap:6px}
+.sq li{display:flex;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:.95rem;line-height:1.4}
+.sq li b{color:var(--brand-text);flex:none}
+.sq details{margin:0;color:var(--ink);font-size:1rem}
+.sq details summary{display:flex;align-items:center;min-height:48px;padding:0 16px;border-radius:6px;background:var(--brand);color:#fff;font:700 1rem var(--sans);cursor:pointer;list-style:none;justify-content:center}
+.sq details summary::-webkit-details-marker{display:none}
+.sq details[open] summary{background:transparent;color:var(--brand-text);border:2px solid currentColor}
+.sq .ans{margin-top:14px;font-size:.95rem}
+.sq .right{font-weight:700}
+.sq .why{font-style:italic;color:var(--muted)}
+.cite{display:flex;gap:10px;align-items:flex-start;margin:12px 0 0;padding:10px 12px;border-radius:8px;background:var(--gold-soft);color:var(--gold-soft-ink);font:600 .88rem/1.45 var(--sans)}
+.cite .mk{width:20px;height:20px;flex:none;margin-top:1px}
+.ticks{list-style:none;margin:24px 0 0;padding:0;display:grid;gap:8px}
+@media (min-width:48rem){.ticks{grid-template-columns:1fr 1fr}}
+@media (min-width:64rem){.ticks{grid-template-columns:repeat(4,1fr)}}
+.ticks li{display:flex;gap:10px;align-items:flex-start;font-weight:600;font-size:.96rem}
+.ticks .mk{width:22px;height:22px;flex:none;margin-top:2px}
+.hstat{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:12px;background:var(--mint);border-left:4px solid var(--brand);font-size:.98rem;margin:0 0 32px}
+.row{margin:0 0 40px}
+.row:last-child{margin:0}
+.rowh{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 14px;padding-bottom:10px;border-bottom:2px solid var(--acc)}
+.rowh.cz{--acc:var(--cz)}.rowh.tx{--acc:var(--tx)}.rowh.ca{--acc:var(--ca)}
+.rowh h3{font-size:1.35rem;color:var(--acc);margin:0}
+.rowh a{display:inline-flex;align-items:center;min-height:44px;font-weight:600;font-size:.94rem}
+.rowh p{flex-basis:100%;margin:0;font-size:.94rem;color:var(--muted)}
+.pcards{display:grid;grid-template-columns:1fr;gap:16px;padding:4px 0 8px}
+.pcards>*{scroll-snap-align:start}
+@media (min-width:48rem){.pcards{grid-auto-flow:row;grid-auto-columns:auto;grid-template-columns:repeat(2,1fr);overflow:visible;padding:0}}
+@media (min-width:64rem){.pcards{grid-template-columns:repeat(3,1fr);gap:24px}}
+.pcard{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);border-top:4px solid var(--acc,var(--brand))}
+.pcard.cz{--acc:var(--cz)}.pcard.tx{--acc:var(--tx)}.pcard.ca{--acc:var(--ca)}
+.pcard img{width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border-bottom:1px solid var(--line)}
+.pcard .cb{padding:16px 16px 18px;display:flex;flex-direction:column;flex:1}
+.pcard .ce{font:700 .84rem/1.35 var(--sans);letter-spacing:.04em;text-transform:uppercase;color:var(--acc);margin:0 0 .4rem}
+.pcard h3{font-size:1.15rem;margin:0 0 .5rem;line-height:1.25}
+.pcard h3 a{color:var(--ink);text-decoration:none}
+.pcard h3 a:hover{text-decoration:underline}
+.pcard .cf{font-size:.95rem;margin:0 0 .5rem}
+.pcard .cs{font-size:.86rem;color:var(--muted);margin:0 0 1rem}
+.pcard .cp{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding-top:12px;border-top:1px solid var(--line)}
+.pcard .pp{font:700 1.4rem/1 var(--sans);font-variant-numeric:lining-nums tabular-nums;color:var(--ink);white-space:nowrap}
+.pcard .more{display:inline-flex;align-items:center;min-height:44px;font-weight:600;font-size:.92rem}
+.shut{display:inline-flex;align-items:center;gap:.45rem;font:600 .88rem/1.3 var(--sans);color:var(--muted)}
+.shut::before{content:"";width:.7rem;height:.7rem;border-radius:50%;border:2px solid currentColor;flex:none}
+.soonc{display:flex;flex-direction:column;justify-content:center;gap:8px;padding:20px;border:2px dashed var(--line);border-radius:12px;color:var(--muted);font-size:.95rem}
+.soonc b{color:var(--ink);font:700 1.1rem var(--serif)}
+.free{display:flex;flex-wrap:wrap;gap:10px;list-style:none;margin:0;padding:0}
+.free a{display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);text-decoration:none;font-size:.95rem}
+.free a:hover{border-color:var(--brand-text)}
+.signup{background:var(--brand-deep);color:#fff}
+.signup .hw{display:grid;gap:20px}
+@media (min-width:64rem){.signup .hw{grid-template-columns:1.3fr 1fr;align-items:center;gap:48px}}
+.signup h2{color:#fff;margin:0;font-size:clamp(1.5rem,1.15rem + 1.4vw,2.1rem)}
+.signup p{color:var(--mint-ink)}
+.signup .eyebrow{color:var(--gold)}
+.signup .fine{font-size:.88rem;margin:.84rem 0 0}
+.corr{background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.corr .hw{display:grid;gap:20px}
+@media (min-width:64rem){.corr .hw{grid-template-columns:1fr 1.4fr;gap:48px}}
+.corr h2{margin:0;font-size:clamp(1.5rem,1.15rem + 1.4vw,2.1rem)}
+.corr ul{list-style:none;margin:0;padding:0;display:grid;border-top:1px solid var(--line)}
+@media (min-width:48rem){.corr ul{grid-template-columns:1fr 1fr;column-gap:24px}}
+.corr li{border-bottom:1px solid var(--line);scroll-margin-top:16px}
+.corr li a{display:flex;align-items:center;min-height:48px;padding:6px 0;color:var(--ink);text-decoration:none;font-size:.95rem}
+.corr li a:hover{color:var(--brand-text);text-decoration:underline}
+@media (prefers-reduced-motion:no-preference){.pcard,.door{transition:box-shadow .15s,transform .15s}.pcard:hover,.door:hover{transform:translateY(-2px)}}
+.pagehead{padding:8px 0 0}
+.pagehead h1{margin:1.25rem 0 .5rem}
+.links{list-style:none;padding:0;margin:0 0 1.5rem;border-top:1px solid var(--line)}
+.links li{border-bottom:1px solid var(--line)}
+.links a{display:flex;align-items:center;min-height:48px;padding:6px 0}
+ol.qs.free{list-style:none;padding:0;counter-reset:fq}
+ol.qs.free>li{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:0 0 16px;box-shadow:var(--shadow)}
+ol.qs.free>li::before{counter-increment:fq;content:"Question " counter(fq);display:block;font:700 .84rem var(--sans);letter-spacing:.04em;text-transform:uppercase;color:var(--gold-ink);margin-bottom:6px}
+ol.qs.free .q{display:block;font-weight:700;font-size:1.05rem}
+ol.qs.free .opts{list-style:none;padding:0;margin:.6rem 0}
+ol.qs.free .opts li{padding:4px 0;margin:2px 0}
+ol.qs.free details{color:var(--ink);font-size:1rem;margin-top:.6rem}
+ol.qs.free summary{display:inline-flex;align-items:center;min-height:48px;padding:.55rem 20px;border-radius:8px;background:var(--brand);color:#fff;font:700 1rem var(--sans);cursor:pointer;list-style:none}
+ol.qs.free summary::-webkit-details-marker{display:none}
+ol.qs.free details[open] summary{background:transparent;color:var(--brand-text);border:2px solid currentColor}
+ol.qs.free details p{color:var(--ink);margin:.7rem 0 0}
+ol.qs.free details i{display:block;font-style:normal;color:var(--muted);margin-top:.4rem}
+ol.qs.free details p.small{color:var(--muted)}
+.endline{background:var(--mint);border-left:4px solid var(--brand);border-radius:12px;padding:14px 16px;margin:0 0 24px}
+.esgal{list-style:none;padding:0;margin:.5rem 0;display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:32rem}
+.esgal img{width:100%;height:auto;border:1px solid var(--line);border-radius:4px;background:#fff}
+.esgal a{display:block;color:var(--muted);text-decoration:none;font-size:.9rem}
+main.wrap{max-width:40rem}
 .card,.pick,.pd .card,.buybox,.rel a,.cards a,.nums li,.book,.callout,.gallery{border-radius:12px}
 .btn,.buybox .btn,.pickl,.status,.soon,.sample .opts li,.menu nav a,.tablewrap tr{border-radius:8px}
 .chips li,.pill,.badge{border-radius:999px}
 .gallery img,.rel img,.stack img{border-radius:6px}
 .buybox,.rel a,.cards a,.cards a:hover,.nums li,.pd .card,.pcard,.door,.sq,.menu nav{box-shadow:var(--shadow)}
 .btn,.buybox .btn,.gallery img,.stack img,.art img{box-shadow:none}
-.eyebrow,footer.site h3,.chips li,.pill,.book .num,.badge{font-size:.84rem}
+.eyebrow,footer.site h2,.chips li,.pill,.book .num,.badge{font-size:.84rem}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+.crumbs a{color:var(--muted)}
+.guides{list-style:none;padding:0;margin:0 0 1.5rem;display:grid;gap:10px}
+@media (min-width:40rem){.guides{grid-template-columns:1fr 1fr}}
+.guides a{display:flex;flex-direction:column;justify-content:center;min-height:56px;padding:10px 14px;background:var(--surface);border:1px solid var(--line);border-radius:12px;color:var(--ink);text-decoration:none;font-weight:600;box-shadow:var(--shadow)}
+.guides a:hover{border-color:var(--brand-text)}
+.guides a{color:var(--brand-text);position:relative;padding-right:36px}
+.guides a::after{content:"→";position:absolute;right:14px;top:50%;transform:translateY(-50%);font-weight:700}
+@media (max-width:47.99rem){.pcard{display:grid;grid-template-columns:112px 1fr;align-items:stretch}.pcard>a{display:block;align-self:start;padding:8px 0 8px 8px}.pcard picture{display:block}.pcard img{width:104px;height:104px;aspect-ratio:1/1;object-fit:cover;border:0;border-radius:8px}.pcard .cb{padding:12px 12px 10px}.pcard .cf,.pcard .cs{display:none}.pcard h3{font-size:1.02rem;margin:0 0 .3rem}.pcard .cp{padding-top:6px}.pcard .pp{font-size:1.15rem}.pcard .more{min-height:40px}}
+.printit{margin:2rem 0}.printit h2{margin:0 0 .4rem}
+.rowh h2{font-size:1.35rem;color:var(--acc);margin:0}
+
 .hidden{display:none!important}
+main a,main li,main p,main td{overflow-wrap:anywhere}
 .btn{padding:.55rem 20px;line-height:1.25;height:auto}
 header.site nav.top a{white-space:nowrap}
 html[lang="es"] .desc{display:none}
@@ -169,13 +306,13 @@ html[lang="es"] .desc{display:none}
 <a class="skip" href="#main">Skip to content</a>
 <header class="site"><div class="hw bar"><a class="brand" href="/" aria-label="Sourced Prep, home"><svg class="mk" viewBox="0 0 32 32" width="28" height="28" aria-hidden="true" focusable="false"><path class="mk-b" d="M12 5H6v22h6M20 5h6v22h-6"/><path class="mk-t" d="M10.5 16.5l4 4 7-9"/></svg><span class="wm">Sourced Prep</span><span class="desc">Exam practice, every answer sourced</span></a><nav class="top" aria-label="Main"><a href="/citizenship/">Citizenship</a><a href="/texas-life-health/">Texas</a><a href="/california-life-health/">California</a><a href="/shop/" class="shop">Shop</a><a href="/learn/">Free study</a><a href="/es/ciudadania/" lang="es">Español</a></nav><a class="shoplink" href="/shop/">Shop</a><details class="menu"><summary>Menu</summary><nav aria-label="Menu"><a href="/citizenship/">Citizenship</a><a href="/texas-life-health/">Texas</a><a href="/california-life-health/">California</a><a href="/shop/">Shop</a><a href="/learn/">Free study</a><a href="/es/ciudadania/" lang="es">Español</a><a href="/corrections/">Book owners: corrections</a></nav></details></div></header>
 <main id="main" class="wrap">
-<h1>How a bill becomes a law, for the civics test</h1>
-<p class="small">Last checked 13 November 2026.</p>
+<p class="crumbs"><a href="/">Sourced Prep</a> / <a href="/citizenship/">US citizenship</a></p><h1>How a bill becomes a law, for the civics test</h1>
+<p class="small">Last checked November 13, 2026.</p>
 <p>Several civics questions are about how federal laws are made. Here are the steps, from the USCIS study guide.</p>
 <h2>The steps</h2>
 <p>1. <strong>Members of Congress write a bill.</strong> A bill is a proposal for a new law. Congress is the part of the federal government that writes laws. 2. <strong>The House and the Senate both vote.</strong> To pass, a bill needs a majority in the House of Representatives and a majority in the Senate. The study guide gives these numbers: 218 of the 435 House members must vote yes, and most bills pass the Senate with 51 of the 100 senators. In both, this is a majority of the members present and voting. You do not need these numbers for the civics test. 3. <strong>The President signs or vetoes.</strong> If the President agrees, the President signs the bill and it becomes law. If not, the President vetoes it. The bill is then not a law, unless Congress votes again to override the veto (make it law without the President's signature).</p>
 <h2>The questions this answers (2025 list)</h2>
-<div class="tablewrap"><table><thead><tr><th>Question</th><th>Answers USCIS accepts</th></tr></thead><tbody><tr><td>18. What part of the federal government writes laws?</td><td>(U.S.) Congress; (U.S. or national) legislature; Legislative branch</td></tr><tr><td>19. What are the two parts of the U.S. Congress?</td><td>Senate and House (of Representatives)</td></tr><tr><td>43. Who signs bills to become laws?</td><td>The President (of the United States)</td></tr><tr><td>44. Who vetoes bills? <span class="badge cz">65/20</span></td><td>The President (of the United States)</td></tr></tbody></table></div>
+<div class="tablewrap"><table><thead><tr class="hdr"><th>Question</th><th>Answers USCIS accepts</th></tr></thead><tbody><tr><td data-label="Question">18. What part of the federal government writes laws?</td><td data-label="Answers USCIS accepts">(U.S.) Congress; (U.S. or national) legislature; Legislative branch</td></tr><tr><td data-label="Question">19. What are the two parts of the U.S. Congress?</td><td data-label="Answers USCIS accepts">Senate and House (of Representatives)</td></tr><tr><td data-label="Question">43. Who signs bills to become laws?</td><td data-label="Answers USCIS accepts">The President (of the United States)</td></tr><tr><td data-label="Question">44. Who vetoes bills? <span class="badge cz">65/20</span></td><td data-label="Answers USCIS accepts">The President (of the United States)</td></tr></tbody></table></div>
 <p><span class="badge cz">65/20</span> Were you 65 or older when you filed, with at least 20 years in total as a permanent resident? Then you study only the 20 questions marked 65/20. See <a href="/citizenship/65-20-rule/">the 65/20 rule</a>.</p>
 <p>On the 2008 test: question 16 (Who makes federal laws? Congress; Senate and House (of Representatives); (U.S. or national) legislature), 17 (the two parts of Congress, a 65/20 question), 33 (Who signs bills to become laws?) and 34 (Who vetoes bills?). For questions 17, 33 and 34 the answers are the same as on the 2025 list.</p>
 <p>Question 20 (name one power of Congress, a 65/20 question) also accepts "writes laws". Question 41 (name one power of the President) accepts "signs bills into law" and "vetoes bills".</p>
@@ -183,11 +320,11 @@ html[lang="es"] .desc{display:none}
 <p>The President can veto a bill, and Congress can vote to override the veto. The Constitution gives each branch different powers so that one branch does not become too powerful. See <a href="/citizenship/three-branches/">the three branches and checks and balances</a>.</p>
 <p>Practice with <a href="/citizenship/">all 128 questions of the 2025 test</a> or a <a href="/citizenship/practice/">practice interview</a>.</p>
 <p class="small">Sourced Prep is independent and is not affiliated with USCIS. This page is study help, not legal advice.</p>
+<div class="printit"><h2>Practice it</h2><p><a class="btn" href="/citizenship/practice/">Start a free practice interview</a></p><p class="small">Prefer paper? The 128 questions as cards to print. Checkout not open yet.</p><div class="pcards"><article class="pcard cz"><a href="/shop/citizenship-flashcards-2025/" tabindex="-1" aria-hidden="true"><picture><source media="(max-width:47.99rem)" srcset="/shop/img/citizenship-flashcards-2025-thumb.webp"><img src="/shop/img/citizenship-flashcards-2025-cover.webp" alt="" width="800" height="450" loading="lazy" decoding="async"></picture></a><div class="cb"><p class="ce">2025 civics test</p><h3><a href="/shop/citizenship-flashcards-2025/">US Citizenship Flashcards, 2025 test</a></h3><p class="cf">128 double-sided cards, for Form N-400 filed on or after October 20, 2025. The 20 cards for 65/20 carry a star.</p><p class="cs">PDF, US Letter, 36 pages</p><div class="cp"><span class="pp">4.99 USD</span></div><a class="more" href="/shop/citizenship-flashcards-2025/">See what is inside</a></div></article></div></div>
 <p class="small">Sources: USCIS 2025 civics study guide, pages 12 and 22. USCIS 2025 civics test list, questions 18, 19, 20, 41, 43 and 44. USCIS 2008 civics test list, questions 16, 17, 33 and 34.</p>
-<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "Article", "headline": "How a bill becomes a law, for the civics test", "dateModified": "2026-11-12", "author": {"@type": "Organization", "name": "Sourced Prep"}, "publisher": {"@type": "Organization", "name": "Sourced Prep"}, "mainEntityOfPage": "https://sourcedprep.com/citizenship/how-a-bill-becomes-law/"}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Sourced Prep", "item": "https://sourcedprep.com/"}, {"@type": "ListItem", "position": 2, "name": "How a bill becomes a law, for the civics test", "item": "https://sourcedprep.com/citizenship/how-a-bill-becomes-law/"}]}]</script>
+<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "Article", "headline": "How a bill becomes a law, for the civics test", "description": "Congress writes bills, the House and the Senate vote, and the President signs or vetoes. The steps from the USCIS guide and the questions they answer.", "dateModified": "2026-11-13", "inLanguage": "en", "image": "https://sourcedprep.com/img/og-citizenship.png", "author": {"@type": "Organization", "name": "Sourced Prep"}, "publisher": {"@type": "Organization", "name": "Sourced Prep"}, "mainEntityOfPage": "https://sourcedprep.com/citizenship/how-a-bill-becomes-law/"}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Sourced Prep", "item": "https://sourcedprep.com/"}, {"@type": "ListItem", "position": 2, "name": "US citizenship", "item": "https://sourcedprep.com/citizenship/"}, {"@type": "ListItem", "position": 3, "name": "How a bill becomes a law, for the civics test", "item": "https://sourcedprep.com/citizenship/how-a-bill-becomes-law/"}]}]</script>
 </main>
-<footer class="site"><div class="hw"><div class="fgrid"><div class="fb"><a class="brand" href="/" aria-label="Sourced Prep, home"><svg class="mk" viewBox="0 0 32 32" width="28" height="28" aria-hidden="true" focusable="false"><path class="mk-b" d="M12 5H6v22h6M20 5h6v22h-6"/><path class="mk-t" d="M10.5 16.5l4 4 7-9"/></svg><span class="wm">Sourced Prep</span></a><p class="small">Exam practice, every answer sourced.</p><p class="small" lang="es">Práctica para el examen, cada respuesta con su fuente.</p></div><div><h3>About</h3><ul><li><a href="/about/">About Sourced Prep</a></li><li><a href="/how-we-source/">How we source</a></li><li><a href="/corrections/">Corrections</a></li></ul></div><div><h3>Study</h3><ul><li><a href="/citizenship/">Citizenship</a></li><li><a href="/texas-life-health/">Texas</a></li><li><a href="/california-life-health/">California</a></li><li><a href="/learn/">Free study</a></li></ul></div><div><h3>Help</h3><ul><li><a href="/shop/">Shop</a></li><li><a href="/help/">How downloads work</a></li><li><a href="/refunds/">Refunds</a></li><li><a href="/legal/">Terms and privacy</a></li></ul></div><div><h3>Contact</h3><ul><li><a href="mailto:hello@sourcedprep.com">hello@sourcedprep.com</a></li><li><a href="/updates/">Store and new-state emails</a></li><li><a href="/es/ciudadania/" lang="es">Español</a></li></ul><p class="small">By email only.</p></div></div><div class="indep"><p>Sourced Prep is independent: not affiliated with or endorsed by any examining or licensing body, and no study guide can guarantee a result.</p>
-<p>Not affiliated with, authorized by, endorsed by or officially connected with U.S. Citizenship and Immigration Services (USCIS). <span id="footlist">The 128 civics questions and answers of the 2025 test (form M-1778, 09/25) and the 100 of the 2008 test (rev. 01/19) are from USCIS&#x27;s public lists; all other text on these pages is Sourced Prep&#x27;s own.</span></p>
-<p>Sourced Prep gives study practice only, not legal or immigration advice, and does not help fill in or file any form.</p><p>This page has no forms, no scripts and no trackers.</p><p>Copyright 2026 Sourced Prep. All rights reserved.</p></div></div></footer>
+<footer class="site"><div class="hw"><div class="fgrid"><div class="fb"><a class="brand" href="/" aria-label="Sourced Prep, home"><svg class="mk" viewBox="0 0 32 32" width="28" height="28" aria-hidden="true" focusable="false"><path class="mk-b" d="M12 5H6v22h6M20 5h6v22h-6"/><path class="mk-t" d="M10.5 16.5l4 4 7-9"/></svg><span class="wm">Sourced Prep</span></a><p class="small">Exam practice, every answer sourced.</p><p class="small" lang="es">Práctica para el examen, cada respuesta con su fuente.</p></div><div><h2>About</h2><ul><li><a href="/about/">About Sourced Prep</a></li><li><a href="/how-we-source/">How we source</a></li><li><a href="/corrections/">Corrections</a></li></ul></div><div><h2>Study</h2><ul><li><a href="/citizenship/">Citizenship</a></li><li><a href="/texas-life-health/">Texas</a></li><li><a href="/california-life-health/">California</a></li><li><a href="/learn/">Free study</a></li></ul></div><div><h2>Help</h2><ul><li><a href="/shop/">Shop</a></li><li><a href="/help/">How downloads work</a></li><li><a href="/refunds/">Refunds</a></li><li><a href="/legal/">Terms and privacy</a></li></ul></div><div><h2>Contact</h2><ul><li><a href="mailto:hello@sourcedprep.com">hello@sourcedprep.com</a></li><li><a href="/updates/">Store and new-state emails</a></li><li><a href="/es/ciudadania/" lang="es">Español</a></li></ul><p class="small">By email only.</p></div></div><div class="indep"><p>Sourced Prep is independent: not affiliated with, authorized by or endorsed by U.S. Citizenship and Immigration Services (USCIS) or any examining or licensing body, and no study guide can guarantee a result. Study practice only, not legal or immigration advice; Sourced Prep does not help fill in or file any form.</p>
+<p><span id="footlist">The 128 civics questions and answers of the 2025 test (form M-1778, 09/25) and the 100 of the 2008 test (rev. 01/19) are from USCIS&#x27;s public lists; all other text on these pages is Sourced Prep&#x27;s own.</span> <a href="/how-we-source/">How we source our answers</a>.</p><p>This page has no forms, no scripts and no trackers.</p><p>Copyright 2026 Sourced Prep. All rights reserved.</p></div></div></footer>
 </body>
 </html>
