@@ -3,8 +3,73 @@
 // Scoring follows the 2025 civics test as USCIS describes it: up to 20 questions, pass at 12 correct, stop at 12 correct or 9 wrong.
 // 2008 test (filed before 20 October 2025): 10 questions from 100, pass at 6, stop at 6 correct or 5 wrong (USCIS Policy Manual vol 12 part E ch 2).
 // 65/20 list (either test): 10 of the 20 starred questions, pass at 6. "All" mode goes through the whole list in order.
+// Progress logic (pure, no DOM): a question is known after "I knew it" on 2 different dates with no later "review" mark.
+var SPCZ = (function () {
+  var DATE = /^\d{4}-\d{2}-\d{2}$/;
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  function dstr(d) { return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
+  function dnum(s) { var p = s.split("-"); return Date.UTC(+p[0], +p[1] - 1, +p[2]) / 86400000; }
+  function between(a, b) { return Math.round(dnum(b) - dnum(a)); }
+  function latest(e) { return e && e.k && e.k.length ? e.k[e.k.length - 1] : ""; }
+  function isSeen(e) { return !!(e && ((e.k && e.k.length) || e.r)); }
+  function isKnown(e) {
+    if (!e || !e.k || e.k.length < 2) return false;
+    return !e.r || e.r < latest(e);   // a review mark on or after the latest knew date returns it to "to review"
+  }
+  // Due today: seen and not known, or known with its last knew date 7 or more days ago.
+  function isDue(e, today) {
+    if (!isSeen(e)) return false;
+    if (!isKnown(e)) return true;
+    return between(latest(e), today) >= 7;
+  }
+  function mark(state, n, ok, date) {
+    var e = state.q[n] || (state.q[n] = { k: [] });
+    if (ok) {
+      if (e.k.indexOf(date) < 0) { e.k.push(date); e.k.sort(); }
+      if (e.r === date) delete e.r;   // knew it after reviewing it on the same day
+    } else { e.r = date; }
+  }
+  function addRound(state, date, knew, asked) {
+    state.h.push({ d: date, k: knew, a: asked });
+    if (state.h.length > 10) state.h = state.h.slice(state.h.length - 10);
+  }
+  function roundsOk(state, thr) {
+    var h = state.h; if (h.length < 3) return false;
+    for (var i = h.length - 3; i < h.length; i++) if (!(h[i].k >= thr)) return false;
+    return true;
+  }
+  function counts(state, nums, today) {
+    var known = 0, seen = 0, due = 0;
+    nums.forEach(function (n) {
+      var e = state.q[n];
+      if (isKnown(e)) known++;
+      if (isSeen(e)) seen++;
+      if (isDue(e, today)) due++;
+    });
+    return { known: known, seen: seen, due: due };
+  }
+  function normalize(raw) {
+    var out = { q: {}, h: [] };
+    if (!raw || typeof raw !== "object") return out;
+    if (raw.q && typeof raw.q === "object") Object.keys(raw.q).forEach(function (n) {
+      var e = raw.q[n]; if (!e || typeof e !== "object") return;
+      var k = (Array.isArray(e.k) ? e.k : []).filter(function (d) { return typeof d === "string" && DATE.test(d); });
+      k = k.filter(function (d, i) { return k.indexOf(d) === i; }).sort();
+      var r = (typeof e.r === "string" && DATE.test(e.r)) ? e.r : undefined;
+      if (k.length || r) { out.q[n] = { k: k }; if (r) out.q[n].r = r; }
+    });
+    if (Array.isArray(raw.h)) out.h = raw.h.filter(function (x) {
+      return x && typeof x.d === "string" && DATE.test(x.d) && isFinite(x.k) && isFinite(x.a);
+    }).map(function (x) { return { d: x.d, k: +x.k, a: +x.a }; }).slice(-10);
+    return out;
+  }
+  return { dstr: dstr, between: between, isKnown: isKnown, isSeen: isSeen, isDue: isDue, mark: mark, addRound: addRound, roundsOk: roundsOk, counts: counts, normalize: normalize };
+})();
+if (typeof module !== "undefined" && module.exports) module.exports = SPCZ;
+
 (function () {
   "use strict";
+  if (typeof document === "undefined") return;
   var $ = function (id) { return document.getElementById(id); };
   var params = new URLSearchParams(location.search);
   var mode = params.get("list") === "6520" ? "6520" : (params.get("mode") === "all" ? "all" : "standard");   // "review" is set below
@@ -28,7 +93,7 @@
     passedT: function (n, r) { return "Muy bien. Practicó " + n + " preguntas y sabía " + r + "."; },
     notyetT: function (n, m) { return "Practicó " + n + " preguntas. Siga adelante: " + m + " por repasar."; },
     rulePass: function (p) { return "En la entrevista, el oficial se detiene después de " + p + " respuestas correctas. En esta ronda llegó a " + p + ". "; },
-    ruleFail: function (f, p) { return "En la entrevista, el oficial se detiene después de " + f + " respuestas no correctas. En esta ronda tiene " + f + " por repasar. "; },
+    ruleFail: function (f, p) { return "En la entrevista, el oficial se detiene después de " + f + " respuestas incorrectas. En esta ronda tiene " + f + " por repasar. "; },
     fin: "Ronda terminada",
     primaryMissed: function (m) { return m === 1 ? "Practique otra vez esta pregunta" : "Practique otra vez estas " + m; },
     newRound: "Nueva ronda", nextPass: "Siguiente: el examen de lectura y escritura (artículo en inglés)", nextUrl: "/citizenship/reading-writing-test/",
@@ -45,12 +110,26 @@
     reached: function (n) { return "llegó a " + n + " respuestas correctas. "; },
     cannot: function (w, n) { return "con " + w + " preguntas por repasar, esta ronda ya no llega a " + n + ". Están abajo: practíquelas y vuelva a intentarlo. "; },
     only: "Esto es solo práctica; el examen real es oral y lo decide el oficial.",
-    calm: "No hay límite de tiempo, y nada de lo que marque se guarda ni se envía. Es normal sentir nervios: tómese su tiempo.",
+    calm: "No hay límite de tiempo. Sus marcas se guardan solo en este dispositivo y no se envían a ningún lugar. Es normal sentir nervios: tómese su tiempo.",
     none: "Nada que repasar esta vez.", again: "Practicar otra vez", back: "Volver a la lista",
     fail: "No se pudieron cargar las preguntas. La lista completa está en la página de preguntas.",
     review: "Preguntas para repasar",
     listed: function (d) { return "Según la página de USCIS, leída el " + d + ": "; },
-    own: "Esta respuesta depende de dónde vive. Diga la respuesta de su estado y compruébela en: "
+    own: "Esta respuesta depende de dónde vive. Diga la respuesta de su estado y compruébela en: ",
+    large: "Letra más grande", forget: "Olvidar mis datos en este dispositivo",
+    nosave: "Su progreso no se puede guardar en este navegador.",
+    first: "Su progreso se guarda solo en este dispositivo. No se envía nada. Una pregunta cuenta como sabida cuando la sabe en dos días distintos.",
+    lead: function (n, t) { return "Usted sabe " + n + " de " + t + "."; },
+    dueT: function (d) { return " " + d + " por repasar hoy."; },
+    gridLabel: function (n, t) { return n + " de " + t + " preguntas sabidas"; },
+    sq: "Pregunta", sqKnown: "sabida", sqSeen: "vista, por repasar", sqNew: "aún no vista",
+    rcHead: "Nuestra prueba de preparación: ",
+    rc1: "cada pregunta sabida en dos días distintos", rc2: function (t) { return "tres entrevistas de práctica seguidas con " + t + " o más sabidas"; },
+    rc3: "las preguntas cuya respuesta depende de dónde vive, sabidas en dos días distintos",
+    rcMet: "Ha cumplido nuestra prueba de preparación. Esto es práctica, no una predicción: el oficial decide.",
+    done_sr: " (cumplido)",
+    dateLabel: "Fecha de su entrevista (opcional, se queda en este dispositivo)",
+    days: function (n) { return n === 0 ? "Su entrevista es hoy." : n === 1 ? "Falta 1 día para su entrevista." : "Faltan " + n + " días para su entrevista."; }
   } : {
     test: v2008 ? "2008 civics test" : "2025 civics test",
     t_std: "Practice interview: " + (v2008 ? "2008 civics test" : "2025 civics test"),
@@ -83,12 +162,26 @@
     reached: function (n) { return "you reached " + n + " correct answers. "; },
     cannot: function (w, n) { return "with " + w + " to review, this round cannot reach " + n + ". They are listed below: practice them, then try again. "; },
     only: "This is practice only; the real test is spoken, and the officer decides.",
-    calm: "There is no time limit, and nothing you mark is saved or sent. Feeling nervous is normal, so take your time.",
+    calm: "There is no time limit. Your marks are saved only on this device and sent nowhere. Feeling nervous is normal, so take your time.",
     none: "Nothing to review this time.", again: "Practice again", back: "Back to the question list",
     fail: "The questions could not be loaded. The full list is on the question list page.",
     review: "Questions to review",
     listed: function (d) { return "As listed by USCIS, read on " + d + ": "; },
-    own: "This answer depends on where you live. Say your own answer, then check it at: "
+    own: "This answer depends on where you live. Say your own answer, then check it at: ",
+    large: "Larger text", forget: "Forget my progress on this device",
+    nosave: "Progress cannot be saved in this browser.",
+    first: "Your progress is saved on this device only. Nothing is sent anywhere. A question counts as known after you know it on two different days.",
+    lead: function (n, t) { return "You know " + n + " of " + t + "."; },
+    dueT: function (d) { return " " + d + " to review today."; },
+    gridLabel: function (n, t) { return n + " of " + t + " questions known"; },
+    sq: "Question", sqKnown: "known", sqSeen: "seen, to review", sqNew: "not seen yet",
+    rcHead: "Our ready check: ",
+    rc1: "every question known on two different days", rc2: function (t) { return "three practice interviews in a row with " + t + " or more known"; },
+    rc3: "the questions whose answer depends on where you live known on two days",
+    rcMet: "You have met our ready check. This is practice, not a prediction: the officer decides.",
+    done_sr: " (done)",
+    dateLabel: "Interview date (optional, stays on this device)",
+    days: function (n) { return n === 0 ? "Your interview is today." : n === 1 ? "1 day to your interview." : n + " days to your interview."; }
   };
   var rules = {
     standard: v2008 ? { ask: 10, pass: 6, failAt: 5, title: T.t_std } : { ask: 20, pass: 12, failAt: 9, title: T.t_std },
@@ -131,6 +224,28 @@
     };
     var order = mode === "all" ? pool.slice() : shuffle(pool.slice()).slice(0, rules.ask);
     var i = 0, right = 0, wrong = 0, missed = [], started = false, hist = [];
+    // Saved progress: one localStorage key per pool; every storage call is wrapped in try/catch.
+    var is6520 = params.get("list") === "6520";
+    var KEY = "sp:cz:" + (is6520 ? "6520-" : "") + (v2008 ? "2008" : "2025");
+    var DATEKEY = "sp:cz:date", LARGEKEY = "sp:large";
+    var gridPool = res[0].questions.filter(function (q) { return !is6520 || q.star; });
+    var gridNums = gridPool.map(function (q) { return q.n; });
+    var variesNums = gridPool.filter(varies).map(function (q) { return q.n; });
+    var readyThr = (!v2008 && !is6520) ? 12 : 6;
+    var storeOk = true;
+    function sGet(k) { try { return window.localStorage.getItem(k); } catch (e) { storeOk = false; return null; } }
+    function sSet(k, v) { try { window.localStorage.setItem(k, v); return true; } catch (e) { storeOk = false; return false; } }
+    function sDel(k) { try { window.localStorage.removeItem(k); } catch (e) { storeOk = false; } }
+    sSet("sp:probe", "1"); sDel("sp:probe");
+    var firstVisit = false, state = { q: {}, h: [] };
+    (function () {
+      var raw = sGet(KEY);
+      if (raw === null) { firstVisit = storeOk; return; }
+      try { state = SPCZ.normalize(JSON.parse(raw)); } catch (e) { state = { q: {}, h: [] }; }
+    })();
+    function saveState() { sSet(KEY, JSON.stringify(state)); }
+    function setLarge(on) { document.documentElement.classList.toggle("sp-large", on); }
+    setLarge(sGet(LARGEKEY) === "1");
     document.documentElement.lang = es ? "es" : "en";
     document.querySelector("h1").textContent = rules.title;
     $("lede").textContent = mode === "6520" ? T.lede_6520 : mode === "all" ? T.lede_all : mode === "review" ? T.lede_review : T.lede_std;
@@ -143,13 +258,13 @@
     var h3 = $("result").querySelector("h3"); if (h3) h3.textContent = T.review;
     if (v2008) {
       var src = $("src");
-      if (src) src.innerHTML = 'Questions and answers: USCIS, <a href="https://www.uscis.gov/sites/default/files/document/questions-and-answers/100q.pdf" rel="noopener">Civics (History and Government) Questions for the Naturalization Test (rev. 01/19)</a>, the 2008 civics test' + (es ? ", with USCIS's Spanish translation" : "") + '. Some answers change with elections and appointments: check <a href="https://www.uscis.gov/citizenship/testupdates" rel="noopener">uscis.gov/citizenship/testupdates</a> before your interview.';
+      if (src) src.innerHTML = 'Questions and answers: USCIS, <a href="https://www.uscis.gov/sites/default/files/document/questions-and-answers/100q.pdf" rel="noopener">Civics (History and Government) Questions for the Naturalization Test (rev. 01/19)</a>, the 2008 civics test' + (es ? ", with USCIS's Spanish translation" : "") + '. Some answers change with elections and appointments: check <a href="https://www.uscis.gov/citizenship/find-study-materials-and-resources/check-for-test-updates" rel="noopener">uscis.gov/citizenship/testupdates</a> before your interview.';
       var fl = $("footlist");
       if (fl) fl.textContent = es ? "The 100 civics questions and answers of the 2008 test, in English and in USCIS's Spanish translation, are from USCIS's public lists (rev. 01/19); all other text on these pages is Sourced Prep's own."
                                   : "The 100 civics questions and answers of the 2008 test are from USCIS's public list (rev. 01/19); all other text on these pages is Sourced Prep's own.";
     } else if (es) {
       var src2 = $("src");
-      if (src2) src2.innerHTML = 'Preguntas y respuestas: lista pública de USCIS, <a href="https://www.uscis.gov/sites/default/files/document/questions-and-answers/2025-Civics-Test-128-Questions-and-Answers.pdf" rel="noopener" lang="en">128 Civics Questions and Answers (2025 version), M-1778 (09/25)</a>. Sourced Prep la comprobó por última vez el 10 de noviembre de 2026. Algunas respuestas cambian con las elecciones y los nombramientos: consulte <a href="https://www.uscis.gov/es/ciudadania/actualizacionesalexamen" rel="noopener">uscis.gov/es/ciudadania/actualizacionesalexamen</a> antes de su entrevista. El español es una traducción propia de Sourced Prep, solo como ayuda de estudio.';
+      if (src2) src2.innerHTML = 'Preguntas y respuestas: lista pública de USCIS, <a href="https://www.uscis.gov/sites/default/files/document/questions-and-answers/2025-Civics-Test-128-Questions-and-Answers.pdf" rel="noopener" lang="en">128 Civics Questions and Answers (2025 version), M-1778 (09/25)</a>. Sourced Prep la comprobó por última vez el 10 de noviembre de 2026. Algunas respuestas cambian con las elecciones y los nombramientos: consulte <a href="https://www.uscis.gov/es/ciudadania/encuentre-materiales-de-estudio-y-recursos/actualizaciones-al-examen-de-civismo" rel="noopener">uscis.gov/es/ciudadania/actualizacionesalexamen</a> antes de su entrevista. El español es una traducción propia de Sourced Prep, solo como ayuda de estudio.';
     }
     $("app").hidden = false;
 
@@ -187,12 +302,14 @@
       if ($("undo")) $("undo").classList.toggle("hidden", !hist.length);
       if (started) { $("show").focus(); document.body.classList.add("going"); }
       started = true;
+      render();
     }
 
     function finish(reason) {
       $("app").querySelector(".card").classList.add("hidden");
       $("result").classList.remove("hidden");
       var asked = right + wrong;
+      if ((mode === "standard" || mode === "6520") && asked > 0) { SPCZ.addRound(state, SPCZ.dstr(new Date()), right, asked); saveState(); }
       if (mode === "all" || mode === "review") {
         $("rtitle").textContent = T.doneT(asked, right);
         $("rtext").textContent = (missed.length ? T.reviewAll + " " : "") + T.only;
@@ -219,10 +336,13 @@
         a.href = listUrl + "#q" + q.n; a.textContent = q.n + ". " + q.q; li.appendChild(a); ol.appendChild(li);
       });
       $("rtitle").setAttribute("tabindex", "-1"); $("rtitle").focus();
+      render();
     }
 
     function next(ok) {
-      hist.push({ i: i, right: right, wrong: wrong, missed: missed.length });
+      var qn = order[i].n;
+      hist.push({ i: i, right: right, wrong: wrong, missed: missed.length, n: qn, snap: JSON.stringify(state.q[qn] || null) });
+      SPCZ.mark(state, qn, ok, SPCZ.dstr(new Date())); firstVisit = false; saveState();
       if (ok) right++; else { wrong++; missed.push(order[i]); }
       i++;
       if (rules.pass && right >= rules.pass) return finish("pass");
@@ -240,7 +360,9 @@
     });
     if ($("undo")) $("undo").addEventListener("click", function () {
       var h = hist.pop(); if (!h) return;
-      i = h.i; right = h.right; wrong = h.wrong; missed.length = h.missed; show();
+      i = h.i; right = h.right; wrong = h.wrong; missed.length = h.missed;
+      var prev = JSON.parse(h.snap); if (prev) state.q[h.n] = prev; else delete state.q[h.n];
+      saveState(); show();
     });
     $("right").addEventListener("click", function () { next(true); });
     $("wrong").addEventListener("click", function () { next(false); });
@@ -253,6 +375,89 @@
         window.speechSynthesis.speak(u);
       });
     } else { $("speak").classList.add("hidden"); }
+    // Progress UI: toggle at the top, lead line, grid, ready check and interview date above the question area, forget button below.
+    var st = document.createElement("style");
+    st.textContent =
+      ".czbox{margin:1rem 0}.czlead{font-weight:700;margin:.4rem 0}.czfirst,.czsave{font-size:.95rem;margin:.4rem 0}" +
+      ".czgrid{display:flex;flex-wrap:wrap;gap:3px;margin:.6rem 0;max-width:34rem}" +
+      ".czsq{width:14px;height:14px;box-sizing:border-box;border:1px solid #c9c3b5;border-radius:2px;background:transparent}" +
+      ".czsq.known{background:#1f5d4c;border-color:#1f5d4c}.czsq.seen{background:#d9a441;border-color:#d9a441}" +
+      "@media (prefers-color-scheme:dark){.czsq{border-color:#8a8678}.czsq.known{background:#2e8a70;border:2px solid #e8e4d8}.czsq.seen{background:#d9a441;border:2px solid #e8e4d8}}" +
+      ".czready{border:1px solid #c9c3b5;border-radius:8px;padding:.7rem .9rem;margin:.6rem 0;opacity:.72}" +
+      ".czready.met{opacity:1;border-color:#1f5d4c;border-width:2px}.czready p{margin:.25rem 0}" +
+      ".czready .czc.on{font-weight:700}.czready .czc.on:before{content:\"✓ \"}" +
+      ".czsr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}" +
+      ".czdate{margin:.5rem 0}.czdate input{font:inherit;margin-left:.4rem}.czforget{margin:1.2rem 0}" +
+      "html.sp-large #qtext{font-size:2rem;line-height:1.25}" +
+      "html.sp-large #alist{font-size:1.3rem}" +
+      "html.sp-large #show,html.sp-large #undo,html.sp-large #speak,html.sp-large #right,html.sp-large #wrong{min-height:56px;font-size:1.15rem}";
+    document.head.appendChild(st);
+    function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text) e.textContent = text; return e; }
+    var app = $("app"), host = app.parentNode;
+    var tg = el("p", "czlarge"), tgBtn = el("button", "btn alt", T.large); tgBtn.type = "button";
+    function syncLarge() { tgBtn.setAttribute("aria-pressed", document.documentElement.classList.contains("sp-large") ? "true" : "false"); }
+    tgBtn.addEventListener("click", function () {
+      var on = !document.documentElement.classList.contains("sp-large");
+      setLarge(on); if (on) sSet(LARGEKEY, "1"); else sDel(LARGEKEY); syncLarge();
+    });
+    syncLarge(); tg.appendChild(tgBtn);
+    host.insertBefore(tg, $("lede"));
+    var box = el("div", "czbox"); host.insertBefore(box, app);
+    var foot = el("p", "czforget"), fbtn = el("button", "btn alt", T.forget); fbtn.type = "button";
+    var dateVal = sGet(DATEKEY) || "";
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateVal)) dateVal = "";
+    fbtn.addEventListener("click", function () {
+      try {
+        var del = [], k;
+        for (k = 0; k < window.localStorage.length; k++) { var nm = window.localStorage.key(k); if (nm && nm.indexOf("sp:") === 0) del.push(nm); }
+        del.forEach(function (nm) { window.localStorage.removeItem(nm); });
+      } catch (e) { storeOk = false; }
+      state = { q: {}, h: [] }; firstVisit = storeOk; setLarge(false); syncLarge(); dateVal = ""; render();
+    });
+    foot.appendChild(fbtn); host.insertBefore(foot, app.nextSibling);
+    function render() {
+      var today = SPCZ.dstr(new Date());
+      var c = SPCZ.counts(state, gridNums, today);
+      box.textContent = "";
+      if (firstVisit) box.appendChild(el("p", "czfirst", T.first));
+      else box.appendChild(el("p", "czlead", T.lead(c.known, gridNums.length) + (c.due > 0 ? T.dueT(c.due) : "")));
+      if (!storeOk) box.appendChild(el("p", "czsave", T.nosave));
+      var g = el("div", "czgrid"); g.setAttribute("role", "img"); g.setAttribute("aria-label", T.gridLabel(c.known, gridNums.length));
+      gridNums.forEach(function (n) {
+        var e = state.q[n], kn = SPCZ.isKnown(e), sn = SPCZ.isSeen(e);
+        var sq = el("span", "czsq" + (kn ? " known" : sn ? " seen" : ""));
+        sq.title = T.sq + " " + n + ": " + (kn ? T.sqKnown : sn ? T.sqSeen : T.sqNew);
+        g.appendChild(sq);
+      });
+      box.appendChild(g);
+      var okAll = c.known === gridNums.length && gridNums.length > 0;
+      var okRounds = SPCZ.roundsOk(state, readyThr);
+      var okVar = variesNums.every(function (n) { return SPCZ.isKnown(state.q[n]); });
+      var met = okAll && okRounds && okVar;
+      var card = el("div", "czready" + (met ? " met" : ""));
+      var p = el("p", ""); p.appendChild(document.createTextNode(T.rcHead));
+      [[okAll, T.rc1], [okRounds, T.rc2(readyThr)], [okVar, T.rc3]].forEach(function (c3, idx) {
+        if (idx) p.appendChild(document.createTextNode(" · "));
+        var sp = el("span", "czc" + (c3[0] ? " on" : ""), c3[1]);
+        if (c3[0]) sp.appendChild(el("span", "czsr", T.done_sr));
+        p.appendChild(sp);
+      });
+      p.appendChild(document.createTextNode("."));
+      card.appendChild(p);
+      if (met) card.appendChild(el("p", "czmet", T.rcMet));
+      box.appendChild(card);
+      var dw = el("p", "czdate"), lab = el("label", "", T.dateLabel), inp = el("input"); inp.type = "date"; inp.value = dateVal;
+      inp.addEventListener("change", function () {
+        dateVal = /^\d{4}-\d{2}-\d{2}$/.test(inp.value) ? inp.value : "";
+        if (dateVal) sSet(DATEKEY, dateVal); else sDel(DATEKEY);
+        render();
+      });
+      lab.appendChild(inp); dw.appendChild(lab); box.appendChild(dw);
+      if (dateVal) {
+        var n = SPCZ.between(today, dateVal);
+        if (n >= 0) box.appendChild(el("p", "czdays", T.days(n)));
+      }
+    }
     show();
   }).catch(function () {
     $("lede").textContent = T.fail;
