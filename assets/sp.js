@@ -25,6 +25,16 @@
     b.setAttribute("aria-pressed", document.documentElement.classList.contains("sp-large") ? "true" : "false");
     b.addEventListener("click", function () { var on = document.documentElement.classList.toggle("sp-large"); if (on) store.set("large", 1); else store.del("large"); b.setAttribute("aria-pressed", on ? "true" : "false"); });
   });
+  // phone buy bar: hidden while the main buy box or the free-sample button is on screen, so it never covers either
+  var bbar = $(".buybar");
+  if (bbar && "IntersectionObserver" in window) {
+    var seen = [];
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { var k = seen.indexOf(e.target); if (e.isIntersecting && k < 0) seen.push(e.target); if (!e.isIntersecting && k >= 0) seen.splice(k, 1); });
+      bbar.classList.toggle("off", seen.length > 0);
+    });
+    [$("#buy"), $(".samp")].forEach(function (w) { if (w) io.observe(w); });
+  }
   $$(".sp-print").forEach(function (b) { b.addEventListener("click", function () { window.print(); }); });
   $$(".sp-forget").forEach(function (b) { if (b.id === "dx-forget") return; var lab = b.textContent; b.addEventListener("click", function () { forgetAll(); b.textContent = lab + " \u2713"; }); });
 
