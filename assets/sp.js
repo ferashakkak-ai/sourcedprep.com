@@ -136,9 +136,10 @@
     var st = store.get(key, null) || { i: 0, picks: [], where: null };
     var stage = $("#dx-stage", dx), prog = $("#dx-prog"), bar = $("#dx-bar span");
     function save() { store.set(key, st); }
+    var S = D.setSize || 5, NS = Math.ceil(D.items.length / S);
     function setProg() {
-      var n = st.picks.length, set = Math.min(4, Math.floor(n / 5) + 1);
-      prog.textContent = n >= D.items.length ? D.t.doneProg : D.t.setLabel.replace("{s}", set).replace("{q}", (n % 5) + 1);
+      var n = st.picks.length, set = Math.min(NS, Math.floor(n / S) + 1), m = Math.min(S, D.items.length - (set - 1) * S);
+      prog.textContent = n >= D.items.length ? D.t.doneProg.replace("{n}", D.items.length) : D.t.setLabel.replace("{s}", set).replace("{t}", NS).replace("{q}", (n % S) + 1).replace("{m}", m);
       bar.style.width = Math.round(100 * n / D.items.length) + "%";
     }
     function askWhere() {
@@ -156,10 +157,10 @@
       if (!st.where) return askWhere();
       var n = st.picks.length;
       if (n >= D.items.length) return result();
-      if (n > 0 && n % 5 === 0 && !st.paused) {
+      if (n > 0 && n % S === 0 && !st.paused) {
         st.paused = true; save();
         stage.textContent = "";
-        stage.appendChild(el("h2", { tabindex: "-1" }, D.t.setDone.replace("{s}", n / 5)));
+        stage.appendChild(el("h2", { tabindex: "-1" }, D.t.setDone.replace("{s}", n / S)));
         var k = el("button", { type: "button", "class": "btn" }, D.t.keepGoing); k.addEventListener("click", function () { step(); });
         var r = el("button", { type: "button", "class": "btn alt" }, D.t.soFar); r.addEventListener("click", function () { result(); });
         stage.appendChild(k); stage.appendChild(r); $("h2", stage).focus();
@@ -179,6 +180,7 @@
     }
     function result() {
       stage.textContent = "";
+      stage.appendChild(el("p", { "class": "dx-rephead" }, D.t.reportH + " (" + new Date().toLocaleDateString() + ")"));
       var byPart = {};
       D.parts.forEach(function (p) { byPart[p.id] = { n: 0, ok: 0, name: p.name, guides: p.guides }; });
       var tot = 0;
@@ -201,9 +203,10 @@
         ul.appendChild(li);
       });
       stage.appendChild(ul);
+      if (D.t.offer) { var o = el("p", { "class": "dx-offer" }); o.appendChild(el("a", { href: D.t.offer[0] }, D.t.offer[1])); stage.appendChild(o); }
       var lows = [], scorable = D.parts.filter(function (p) { return byPart[p.id].n >= 4; }).length;
       if (low) D.parts.forEach(function (p) { var b = byPart[p.id]; if (b.n >= 4 && b.ok / b.n === low.r) lows.push(b); });
-      if (st.picks.length < D.items.length) stage.appendChild(el("p", null, D.t.partial));
+      if (st.picks.length < D.items.length) stage.appendChild(el("p", null, D.t.partial.replace("{t}", NS)));
       else if (low && low.r === 1) stage.appendChild(el("p", null, D.t.perfect));
       else if (low && lows.length === scorable && scorable > 1) stage.appendChild(el("p", null, D.t.even));
       else if (low) {
@@ -259,7 +262,17 @@
       });
       plan.appendChild(ics); stage.appendChild(plan);
       stage.appendChild(el("p", { "class": "small" }, D.t.fine));
-      if (D.t.offer) { var o = el("p", { "class": "pickl" }); o.appendChild(el("a", { href: D.t.offer[0] }, D.t.offer[1])); o.appendChild(document.createTextNode(" " + D.t.offer[2])); stage.appendChild(o); }
+      // the report: printed or saved as PDF from this page; nothing is sent
+      var rep = el("button", { type: "button", "class": "btn alt" }, D.t.report);
+      rep.addEventListener("click", function () {
+        var mb = $(".dx-missbox", stage); if (mb) mb.open = true;
+        if (inp.value) store.set("examdate:" + D.id, inp.value);
+        document.body.classList.add("dx-print");
+        window.addEventListener("afterprint", function () { document.body.classList.remove("dx-print"); }, { once: true });
+        window.print();
+      });
+      stage.appendChild(rep);
+      stage.appendChild(el("p", { "class": "small" }, D.t.reportNote));
       var again = el("button", { type: "button", "class": "btn alt" }, D.t.again);
       again.addEventListener("click", function () { st = { i: 0, picks: [], where: null }; save(); step(); });
       stage.appendChild(again);
