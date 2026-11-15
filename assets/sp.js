@@ -25,6 +25,7 @@
     b.setAttribute("aria-pressed", document.documentElement.classList.contains("sp-large") ? "true" : "false");
     b.addEventListener("click", function () { var on = document.documentElement.classList.toggle("sp-large"); if (on) store.set("large", 1); else store.del("large"); b.setAttribute("aria-pressed", on ? "true" : "false"); });
   });
+  $$(".sp-print").forEach(function (b) { b.addEventListener("click", function () { window.print(); }); });
   $$(".sp-forget").forEach(function (b) { if (b.id === "dx-forget") return; var lab = b.textContent; b.addEventListener("click", function () { forgetAll(); b.textContent = lab + " \u2713"; }); });
 
   // ---------- one question, revealed in place (home hero and article checks) ----------
@@ -260,7 +261,9 @@
         lines.push("END:VCALENDAR");
         var a = el("a", { href: "data:text/calendar;charset=utf-8," + encodeURIComponent(lines.join("\r\n")), download: "sourced-prep-plan.ics" }); document.body.appendChild(a); a.click(); a.remove();
       });
-      plan.appendChild(ics); stage.appendChild(plan);
+      plan.appendChild(ics);
+      if (D.t.planLink) { var pl = el("p", { "class": "small" }); pl.appendChild(el("a", { href: D.t.planLink[0] }, D.t.planLink[1])); plan.appendChild(pl); }
+      stage.appendChild(plan);
       stage.appendChild(el("p", { "class": "small" }, D.t.fine));
       // the report: printed or saved as PDF from this page; nothing is sent
       var rep = el("button", { type: "button", "class": "btn alt" }, D.t.report);
