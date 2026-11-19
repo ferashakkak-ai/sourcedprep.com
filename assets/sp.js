@@ -33,7 +33,7 @@
       es.forEach(function (e) { var k = seen.indexOf(e.target); if (e.isIntersecting && k < 0) seen.push(e.target); if (!e.isIntersecting && k >= 0) seen.splice(k, 1); });
       bbar.classList.toggle("off", seen.length > 0);
     });
-    [$("#buy .btn") || $("#buy"), $(".samp")].forEach(function (w) { if (w) io.observe(w); });
+    [$("#buy .btn") || $("#buy"), $(".samp .btn") || $(".samp")].forEach(function (w) { if (w) io.observe(w); });
   }
   $$(".sp-print").forEach(function (b) { b.addEventListener("click", function () { window.print(); }); });
   $$(".sp-forget").forEach(function (b) { if (b.id === "dx-forget") return; var lab = b.textContent; b.addEventListener("click", function () { forgetAll(); b.textContent = lab + " \u2713"; }); });
