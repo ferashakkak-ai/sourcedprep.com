@@ -214,6 +214,18 @@
         ul.appendChild(li);
       });
       stage.appendChild(ul);
+      // "Email me my score": opens the visitor's own mail app; nothing is sent or stored by the site (DECISIONS 33, 20 Nov 2026)
+      if (D.t.mail) {
+        var M = D.t.mail, ln = [stage.querySelector(".dx-rephead").textContent, stage.querySelector("h2").textContent];
+        Array.prototype.forEach.call(ul.querySelectorAll("li"), function (li) { ln.push(li.textContent); });
+        ln.push("", M.note, "", M.howH);
+        M.steps.forEach(function (s, i) { ln.push((i + 1) + ". " + s); });
+        if (D.t.planLink) ln.push("", M.plan + " https://sourcedprep.com" + D.t.planLink[0]);
+        var mp = el("p", { "class": "dx-mail" });
+        mp.appendChild(el("a", { "class": "btn alt", href: "mailto:?subject=" + encodeURIComponent(M.subj) + "&body=" + encodeURIComponent(ln.join("\r\n")) }, M.btn));
+        mp.appendChild(el("span", { "class": "small", style: "display:block;margin-top:.4rem" }, M.help));
+        stage.appendChild(mp);
+      }
       if (D.t.offer) { var o = el("p", { "class": "dx-offer" }); o.appendChild(el("a", { href: D.t.offer[0] }, D.t.offer[1])); stage.appendChild(o); }
       var lows = [], scorable = D.parts.filter(function (p) { return byPart[p.id].n >= 4; }).length;
       if (low) D.parts.forEach(function (p) { var b = byPart[p.id]; if (b.n >= 4 && b.ok / b.n === low.r) lows.push(b); });

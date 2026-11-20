@@ -110,6 +110,12 @@ if (typeof module !== "undefined" && module.exports) module.exports = SPCZ;
     reached: function (n) { return "llegó a " + n + " respuestas correctas. "; },
     cannot: function (w, n) { return "con " + w + " preguntas por repasar, esta ronda ya no llega a " + n + ". Están abajo: practíquelas y vuelva a intentarlo. "; },
     only: "Esto es solo práctica; el examen real es oral y lo decide el oficial.",
+    mail: { btn: "Envíeme mi resultado por correo", subj: "Mi resultado de práctica, " + (v2008 ? "examen de 2008" : "examen de 2025"),
+            note: "Es solo práctica. No es una predicción del resultado de su entrevista.", howH: "Cómo usarlo:",
+            steps: ["Practique primero las preguntas que marcó para repasar.", "Diga cada respuesta en voz alta, como en la entrevista.",
+                    "Practique otra vez en unos días, no el mismo día, y vea si le quedan menos por repasar."],
+            again: "Practicar otra vez:", url: "/es/ciudadania/practica/",
+            help: "Abre su propio programa de correo con su resultado. Escriba su dirección y envíeselo; Sourced Prep no la ve." },
     calm: "No hay límite de tiempo. Sus marcas se guardan solo en este dispositivo y no se envían a ningún lugar. Es normal sentir nervios: tómese su tiempo.",
     none: "Nada que repasar esta vez.", again: "Practicar otra vez", back: "Volver a la lista",
     fail: "No se pudieron cargar las preguntas. La lista completa está en la página de preguntas.",
@@ -136,7 +142,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = SPCZ;
     t_6520: "65/20 practice, " + (v2008 ? "2008 civics test" : "2025 civics test") + " (10 questions)",
     t_all: "All " + total + " questions, " + (v2008 ? "2008 civics test" : "2025 civics test"),
     lede_std: v2008 ? "For applications filed before 20 October 2025. The officer asks up to 10 of the 100 questions; you need 6 correct. Say your answer out loud, then show the USCIS answers and mark yourself honestly."
-                    : "2025 civics test: the officer asks up to 20 questions. Say your answer out loud, then show the USCIS answers and mark yourself honestly.",
+                    : "2025 civics test: the officer asks up to 20 questions and stops at 12 right or 9 wrong. Say your answer out loud, then show the USCIS answers and mark yourself honestly.",
     lede_6520: "The officer asks 10 of the 20 questions marked 65/20, and you need at least 6 correct. You may take this test in the language of your choice with an interpreter.",
     lede_all: "All " + total + " questions in USCIS order. Say your answer, show the answers, mark whether you knew it.",
     lede_review: "Only the questions you marked to review. Take your time.",
@@ -162,6 +168,12 @@ if (typeof module !== "undefined" && module.exports) module.exports = SPCZ;
     reached: function (n) { return "you reached " + n + " correct answers. "; },
     cannot: function (w, n) { return "with " + w + " to review, this round cannot reach " + n + ". They are listed below: practice them, then try again. "; },
     only: "This is practice only; the real test is spoken, and the officer decides.",
+    mail: { btn: "Email me my score", subj: "My " + (v2008 ? "2008" : "2025") + " civics test practice score",
+            note: "Practice feedback only. It is not a prediction of your interview result.", howH: "How to use it:",
+            steps: ["Practice the questions you marked to review first.", "Say each answer out loud, as you will at the interview.",
+                    "Practice again in a few days, not the same day, and see whether fewer are left to review."],
+            again: "Practice again:", url: "/citizenship/practice/",
+            help: "Opens your own mail app with your score filled in. Type your address and send it to yourself; Sourced Prep does not see it." },
     calm: "There is no time limit. Your marks are saved only on this device and sent nowhere. Feeling nervous is normal, so take your time.",
     none: "Nothing to review this time.", again: "Practice again", back: "Back to the question list",
     fail: "The questions could not be loaded. The full list is on the question list page.",
@@ -335,6 +347,18 @@ if (typeof module !== "undefined" && module.exports) module.exports = SPCZ;
         var li = document.createElement("li"); var a = document.createElement("a");
         a.href = listUrl + "#q" + q.n; a.textContent = q.n + ". " + q.q; li.appendChild(a); ol.appendChild(li);
       });
+      // "Email me my score": opens the visitor's own mail app; nothing is sent or stored by the site (DECISIONS 33, 20 Nov 2026)
+      var M = T.mail, mp = $("mailme");
+      if (!mp) { mp = document.createElement("p"); mp.id = "mailme"; $("rtext").parentNode.insertBefore(mp, $("rtext").nextSibling); }
+      mp.textContent = "";
+      var ln = [$("rtitle").textContent, $("rtext").textContent, "", M.note, "", M.howH];
+      M.steps.forEach(function (s, j) { ln.push((j + 1) + ". " + s); });
+      var q = new URLSearchParams(); if (v2008) q.set("test", "2008"); if (mode === "6520") q.set("list", "6520");
+      ln.push("", M.again + " https://sourcedprep.com" + M.url + (q.toString() ? "?" + q.toString() : ""));
+      var ma = document.createElement("a"); ma.className = "btn alt"; ma.textContent = M.btn;
+      ma.href = "mailto:?subject=" + encodeURIComponent(M.subj) + "&body=" + encodeURIComponent(ln.join("\r\n"));
+      var mh = document.createElement("span"); mh.className = "small"; mh.style.display = "block"; mh.style.marginTop = ".4rem"; mh.textContent = M.help;
+      mp.appendChild(ma); mp.appendChild(mh);
       $("rtitle").setAttribute("tabindex", "-1"); $("rtitle").focus();
       render();
     }
